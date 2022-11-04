@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { readTalkers } = require('./utils/talkerFuncs');
+const { readTalkers, readTalkerById } = require('./utils/talkerFuncs');
 const { validadeTalkers } = require('./midlewares/talkerMidleWares');
 
 const app = express();
@@ -22,6 +22,15 @@ app.listen(PORT, () => {
 app.get('/talker', validadeTalkers, async (req, res) => {
   const allTalker = await readTalkers();
   res.status(200).json(allTalker);
+});
+
+app.get('/talker/:id', async (req, res) => {
+  const id = Number(req.params.id);
+  const talker = await readTalkerById(id);
+  if (talker) {
+    return res.status(200).json(talker);
+  }
+  res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
 });
 
 module.exports = app;

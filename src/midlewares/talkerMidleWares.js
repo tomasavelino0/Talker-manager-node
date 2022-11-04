@@ -11,7 +11,7 @@ const validadeTalkers = async (_req, res, next) => {
     res.status(200).json([]);
 };
 
-const validadeLoginBody = async (req, _res, next) => {
+const validadeLoginBody = (req, _res, next) => {
   const propriedadesBody = ['email', 'password'];
   const loginBody = req.body;
   const hasProperties = propriedadesBody.every((propriedade) => propriedade in loginBody);
@@ -22,10 +22,40 @@ const validadeLoginBody = async (req, _res, next) => {
     };
     return next(`Error ${error.statusCode}, ${error.message}`);
   }
-    return next();
+   next();
+};
+
+const validEmail = (email) => {
+  const regex = /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+  return regex.test(email);
+};
+
+const validadeEmail = (req, res, next) => {
+  const { email } = req.body;
+  if (email === undefined) {
+    return res.status(400).json({ message: 'O campo "email" é obrigatório' });
+  }
+  if (!validEmail(email)) {
+    return res.status(400).json({ message: 'O "email" deve ter o formato "email@email.com"' });
+  }
+  next();
+};
+
+const validadePassWord = (req, res, next) => {
+  const validPassWord = 6;
+  const { password } = req.body;
+  if (password === undefined) {
+    return res.status(400).json({ message: 'O campo "password" é obrigatório' });
+  }
+  if (password.length < validPassWord) {
+    return res.status(400).json({ message: 'O "password" deve ter pelo menos 6 caracteres' });
+  }
+  next();
 };
 
 module.exports = {
     validadeTalkers,
     validadeLoginBody,
+    validadeEmail,
+    validadePassWord,
 };

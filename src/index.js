@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { readTalkers, readTalkerById } = require('./utils/talkerFuncs');
-const { validadeTalkers } = require('./midlewares/talkerMidleWares');
+const { readTalkers, readTalkerById, generateToken } = require('./utils/talkerFuncs');
+const { validadeTalkers, validadeLoginBody } = require('./midlewares/talkerMidleWares');
 
 const app = express();
 app.use(bodyParser.json());
@@ -31,6 +31,11 @@ app.get('/talker/:id', async (req, res) => {
     return res.status(200).json(talker);
   }
   res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
+});
+
+app.post('/login', validadeLoginBody, (req, res) => {
+  const token = generateToken();
+  res.status(200).json({ token });
 });
 
 module.exports = app;

@@ -1,8 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { readTalkers, readTalkerById, generateToken } = require('./utils/talkerFuncs');
+const { readTalkers, 
+  readTalkerById, 
+  generateToken, 
+  createNewTalker } = require('./utils/talkerFuncs');
+
 const { validadeTalkers,
-  validadePassWord, validadeEmail } = require('./midlewares/talkerMidleWares');
+  validadePassWord, validadeEmail, validateToken,
+  validateAge,
+  validateWatchedAt,
+  validateRate,
+  validadeTalk,
+  validateName } = require('./midlewares/talkerMidleWares');
 
 const app = express();
 app.use(bodyParser.json());
@@ -34,9 +43,21 @@ app.get('/talker/:id', async (req, res) => {
   res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
 });
 
-app.post('/login', validadeEmail, validadePassWord, (req, res) => {
+app.post('/login', validadeEmail, validadePassWord, (_req, res) => {
   const token = generateToken();
   res.status(200).json({ token });
+});
+
+app.post('/talker',
+validateToken,
+validadeTalk,
+validateName,
+validateAge,
+validateWatchedAt,
+validateRate, async (req, res) => {
+  const { name, age, talk } = req.body;
+  const talker = await createNewTalker({ name, age, talk });
+  res.status(201).json(talker);
 });
 
 module.exports = app;

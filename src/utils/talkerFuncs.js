@@ -24,8 +24,15 @@ const createNewTalker = async (talker) => {
   allTalkers.push(newTalker);
   await fs.writeFile(join(__dirname, PATH_NAME), JSON.stringify(allTalkers));
   idTalker += 1;
-  console.log(newTalker);
   return newTalker;
+};
+
+const updateTalker = async (id, talker) => {
+  const allTalkers = await readTalkers();
+  const index = allTalkers.findIndex((person) => person.id === id);
+  allTalkers[index] = { id, ...talker };
+  await fs.writeFile(join(__dirname, PATH_NAME), JSON.stringify(allTalkers));
+  return allTalkers[index];
 };
 
 module.exports = {
@@ -33,4 +40,5 @@ module.exports = {
     readTalkerById,
     generateToken,
     createNewTalker,
+    updateTalker,
 };

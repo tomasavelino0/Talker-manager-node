@@ -3,7 +3,8 @@ const bodyParser = require('body-parser');
 const { readTalkers, 
   readTalkerById, 
   generateToken, 
-  createNewTalker } = require('./utils/talkerFuncs');
+  createNewTalker,
+  updateTalker } = require('./utils/talkerFuncs');
 
 const { validadeTalkers,
   validadePassWord, validadeEmail, validateToken,
@@ -58,6 +59,19 @@ validateRate, async (req, res) => {
   const { name, age, talk } = req.body;
   const talker = await createNewTalker({ name, age, talk });
   res.status(201).json(talker);
+});
+
+app.put('/talker/:id',
+validateToken,
+validadeTalk,
+validateName,
+validateAge,
+validateWatchedAt,
+validateRate, async (req, res, _next) => {
+  const { id } = req.params;
+  const talkerInfo = req.body;
+  const talker = await updateTalker(Number(id), talkerInfo);
+  return res.status(200).json(talker);
 });
 
 module.exports = app;

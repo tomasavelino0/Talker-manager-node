@@ -4,7 +4,8 @@ const { readTalkers,
   readTalkerById, 
   generateToken, 
   createNewTalker,
-  updateTalker } = require('./utils/talkerFuncs');
+  updateTalker,
+  deleteTalkerById } = require('./utils/talkerFuncs');
 
 const { validadeTalkers,
   validadePassWord, validadeEmail, validateToken,
@@ -72,6 +73,13 @@ validateRate, async (req, res, _next) => {
   const talkerInfo = req.body;
   const talker = await updateTalker(Number(id), talkerInfo);
   return res.status(200).json(talker);
+});
+
+app.delete('/talker/:id',
+validateToken, async (req, res, _next) => {
+  const { id } = req.params;
+  await deleteTalkerById(Number(id));
+  res.status(204).end();
 });
 
 module.exports = app;

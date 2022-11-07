@@ -35,10 +35,18 @@ const updateTalker = async (id, talker) => {
   return allTalkers[index];
 };
 
+const deleteTalkerById = async (id) => {
+  const allTalkers = await readTalkers();
+  const index = allTalkers.findIndex((talker) => talker.id === id);
+  allTalkers.splice(index, 1);
+  await fs.writeFile(join(__dirname, PATH_NAME), JSON.stringify(allTalkers));
+};
+
 module.exports = {
     readTalkers,
     readTalkerById,
     generateToken,
     createNewTalker,
     updateTalker,
+    deleteTalkerById,
 };

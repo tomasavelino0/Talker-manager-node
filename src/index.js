@@ -5,7 +5,8 @@ const { readTalkers,
   generateToken, 
   createNewTalker,
   updateTalker,
-  deleteTalkerById } = require('./utils/talkerFuncs');
+  deleteTalkerById, 
+  querySearch } = require('./utils/talkerFuncs');
 
 const { validadeTalkers,
   validadePassWord, validadeEmail, validateToken,
@@ -31,6 +32,22 @@ app.listen(PORT, () => {
 });
 //
 
+app.post('/login', validadeEmail, validadePassWord, (_req, res) => {
+  const token = generateToken();
+  res.status(200).json({ token });
+});
+
+app.get('/talker/search',
+validateToken, async (req, res, _next) => {
+  const quer = req.query.q;
+  console.log(quer);
+  if (!quer || quer === '') {
+    return res.status(200).json(await readTalkers());
+  }
+  const allTalkers = await querySearch(quer.toLowerCase());
+  return res.status(200).json(allTalkers);
+});
+
 app.get('/talker', validadeTalkers, async (req, res) => {
   const allTalker = await readTalkers();
   res.status(200).json(allTalker);
@@ -43,11 +60,6 @@ app.get('/talker/:id', async (req, res) => {
     return res.status(200).json(talker);
   }
   res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
-});
-
-app.post('/login', validadeEmail, validadePassWord, (_req, res) => {
-  const token = generateToken();
-  res.status(200).json({ token });
 });
 
 app.post('/talker',
